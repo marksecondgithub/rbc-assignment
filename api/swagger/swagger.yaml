@@ -30,7 +30,24 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/ClientResponse"
+              $ref: "#/definitions/ClientSchema"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      operationId: clientCreate
+      description: Create a new client record
+      parameters:
+        - in: body
+          name: client
+          schema:
+            $ref: "#/definitions/ClientSchema"
+      responses:
+        "201":
+          description: Success
+          schema:
+            type: string
         default:
           description: Error
           schema:
@@ -39,9 +56,14 @@ paths:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
-  ClientResponse:
+  ClientSchema:
     required:
       - name
+      - address
+      - postalCode
+      - phone
+      - email
+      - dob
     properties:
       name:
         type: string
