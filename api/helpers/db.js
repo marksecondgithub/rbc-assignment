@@ -8,6 +8,7 @@ const getClients = () => {
 }
 
 const insertClient = clientObj => {
+  clientObj.dob = new Date(clientObj.dob).toJSON()
   return MongoClient.connect(config.DB_URL).then(db => {
     return db.collection('clients').insert(clientObj)
   })

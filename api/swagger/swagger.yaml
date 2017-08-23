@@ -79,7 +79,7 @@ definitions:
         type: string
   ErrorResponse:
     required:
-      - message
+      - err
     properties:
-      message:
+      err:
         type: string
