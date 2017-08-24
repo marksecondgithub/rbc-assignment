@@ -1,7 +1,10 @@
 let mongoose = require('mongoose')
 
 const AccountSchema = mongoose.Schema({
-  number: Number,
+  number: {
+    type: Number,
+    unique: true
+  },
   type: String,
   status: String
 })
