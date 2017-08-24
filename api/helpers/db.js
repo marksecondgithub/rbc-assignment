@@ -13,6 +13,10 @@ const getClients = () => {
   })
 }
 
+const getClientById = clientId => {
+  return Client.findOne({ _id: clientId })
+}
+
 const insertClient = clientObj => {
   // Normalize DOB
   clientObj.dob = new Date(clientObj.dob).toJSON()
@@ -25,6 +29,10 @@ const insertClient = clientObj => {
   return client.save()
 }
 
+const deleteClientById = clientId => {
+  return Client.deleteOne({ _id: clientId })
+}
+
 // Accounts
 
 const getAccounts = () => {
@@ -35,6 +43,8 @@ const getAccounts = () => {
 
 module.exports = {
   getClients,
+  getClientById,
   insertClient,
+  deleteClientById,
   getAccounts
 }

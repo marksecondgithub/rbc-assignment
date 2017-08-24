@@ -53,6 +53,39 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
             
+  /clients/{clientId}:
+    x-swagger-router-controller: clients
+    parameters:
+      - name: clientId
+        in: path
+        required: true
+        type: string
+    get:
+      operationId: clientById
+      description: Return a client by ID
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ClientSchema"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      operationId: clientDelete
+      description: Delete a client by ID
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      
+            
   /accounts:
     x-swagger-router-controller: accounts
     get:

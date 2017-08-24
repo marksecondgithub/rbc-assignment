@@ -7,7 +7,21 @@ const clientsList = (req, res) => {
     return res.json(clients)
   }).catch(err => {
     res.status(500)
-    return res.json({err})
+    return res.json({err: err.message})
+  })
+}
+
+const clientById = (req, res) => {
+  return db.getClientById(req.swagger.params.clientId.value).then(client => {
+    if (client){
+      return res.json(client)
+    } else {
+      res.status(404)
+      return res.json({err: "Client not found"})
+    }
+  }).catch(err => {
+    res.status(500)
+    return res.json({err: err.message})
   })
 }
 
@@ -16,7 +30,7 @@ const clientCreate = (req, res) => {
   if (isNaN(Date.parse(req.body.dob))){
     res.status(500)
     let err = 'Invalid Date Format for DOB'
-    return res.json({err})
+    return res.json({err: err.message})
   }
 
   try {
@@ -31,11 +45,27 @@ const clientCreate = (req, res) => {
     return res.json('')
   }).catch(err => {
     res.status(500)
-    return res.json({err})
+    return res.json({err: err.message})
+  })
+}
+
+const clientDelete = (req, res) => {
+  return db.deleteClientById(req.swagger.params.clientId.value).then(client => {
+    if (client){
+      return res.json('')
+    } else {
+      res.status(404)
+      return res.json({err: "Client not found"})
+    }
+  }).catch(err => {
+    res.status(500)
+    return res.json({err: err.message})
   })
 }
 
 module.exports = {
   clientsList,
-  clientCreate
+  clientById,
+  clientCreate,
+  clientDelete
 }
