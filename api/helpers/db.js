@@ -56,11 +56,26 @@ const getAccounts = () => {
   })
 }
 
+const getAccountsByClientId = clientId => {
+  return Client.findOne({ _id: clientId }).then(client => {
+    return client.accounts
+  })
+}
+
+const insertAccountByClientId = (clientId, accountObj) => {
+  return Client.findOne({ _id: clientId }).then(client => {
+    client.accounts.push(accountObj)
+    return client.save()
+  })
+}
+
 module.exports = {
   getClients,
   getClientById,
   insertClient,
   updateClientById,
   deleteClientById,
-  getAccounts
+  getAccounts,
+  getAccountsByClientId,
+  insertAccountByClientId
 }

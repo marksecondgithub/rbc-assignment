@@ -101,6 +101,45 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+            
+  /clients/{clientId}/accounts:
+    x-swagger-router-controller: accounts
+    parameters:
+      - name: clientId
+        in: path
+        required: true
+        type: string
+    get:
+      operationId: accountsListByClientId
+      description: Returns list of all accounts
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AccountSchema"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      operationId: accountCreate
+      description: Create a new account record
+      parameters:
+        - in: body
+          name: account
+          schema:
+            $ref: "#/definitions/AccountSchema"
+      responses:
+        "201":
+          description: Success
+          schema:
+            type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
       
             
   /accounts:
@@ -170,8 +209,6 @@ definitions:
     required:
       - type
     properties:
-      number:
-        type: integer
       "type":
         type: string
       status:
