@@ -17,6 +17,7 @@ const clientCreate = (req, res) => {
     return res.json({err})
   }
   return db.insertClient(req.body).then(() => {
+    res.status(201)
     return res.json('')
   }).catch(err => {
     res.status(500)
