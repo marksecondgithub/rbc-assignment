@@ -49,6 +49,20 @@ const clientCreate = (req, res) => {
   })
 }
 
+const clientUpdate = (req, res) => {
+  return db.updateClientById(req.swagger.params.clientId.value, req.body).then(client => {
+    if (client){
+      return res.json('')
+    } else {
+      res.status(404)
+      return res.json({err: "Client not found"})
+    }
+  }).catch(err => {
+    res.status(500)
+    return res.json({err: err.message})
+  })
+}
+
 const clientDelete = (req, res) => {
   return db.deleteClientById(req.swagger.params.clientId.value).then(client => {
     if (client){
@@ -67,5 +81,6 @@ module.exports = {
   clientsList,
   clientById,
   clientCreate,
+  clientUpdate,
   clientDelete
 }

@@ -29,6 +29,10 @@ const insertClient = clientObj => {
   return client.save()
 }
 
+const updateClientById = (clientId, clientObj) => {
+  return Client.findOneAndUpdate({ _id: clientId }, clientObj)
+}
+
 const deleteClientById = clientId => {
   return Client.deleteOne({ _id: clientId })
 }
@@ -45,6 +49,7 @@ module.exports = {
   getClients,
   getClientById,
   insertClient,
+  updateClientById,
   deleteClientById,
   getAccounts
 }

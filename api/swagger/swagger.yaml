@@ -72,6 +72,23 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    put:
+      operationId: clientUpdate
+      description: Update a client by ID
+      parameters:
+        - in: body
+          name: client
+          schema:
+            $ref: "#/definitions/ClientUpdateSchema"
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
     delete:
       operationId: clientDelete
       description: Delete a client by ID
@@ -106,7 +123,7 @@ paths:
             
   /swagger:
     x-swagger-pipe: swagger_raw
-# complex objects have schema definitions
+
 definitions:
   ClientSchema:
     required:
@@ -133,6 +150,21 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/AccountSchema"
+          
+  ClientUpdateSchema:
+    properties:
+      name:
+        type: string
+      address:
+        type: string
+      postalCode:
+        type: string
+      phone:
+        type: string
+      email:
+        type: string
+      dob:
+        type: string
         
   AccountSchema:
     required:
