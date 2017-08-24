@@ -7,6 +7,21 @@ let Account = require('./accounts').Account
 
 // Clients
 
+const normalizeClient = clientObj => {
+  // Normalize DOB
+  if (clientObj.dob){
+    clientObj.dob = new Date(clientObj.dob).toJSON()
+  }
+
+  // Normalize Phone Number
+  if (clientObj.phone){
+    let phoneNumber = phoneUtil.parse(clientObj.phone, 'US')
+    clientObj.phone = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
+  }
+
+  return clientObj
+}
+
 const getClients = () => {
   return Client.find().then(clients => {
     return clients
@@ -18,18 +33,14 @@ const getClientById = clientId => {
 }
 
 const insertClient = clientObj => {
-  // Normalize DOB
-  clientObj.dob = new Date(clientObj.dob).toJSON()
-
-  // Normalize Phone Number
-  let phoneNumber = phoneUtil.parse(clientObj.phone, 'US')
-  clientObj.phone = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
+  clientObj = normalizeClient(clientObj)
 
   let client = new Client(clientObj)
   return client.save()
 }
 
 const updateClientById = (clientId, clientObj) => {
+  clientObj = normalizeClient(clientObj)
   return Client.findOneAndUpdate({ _id: clientId }, clientObj)
 }
 
