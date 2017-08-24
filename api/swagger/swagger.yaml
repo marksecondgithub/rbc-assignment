@@ -52,6 +52,25 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+            
+  /accounts:
+    x-swagger-router-controller: accounts
+    get:
+      operationId: accountsList
+      description: Returns list of all accounts
+      parameters: []
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AccountSchema"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -77,6 +96,22 @@ definitions:
         type: string
       dob:
         type: string
+      accounts:
+        type: array
+        items:
+          $ref: "#/definitions/AccountSchema"
+        
+  AccountSchema:
+    required:
+      - type
+    properties:
+      number:
+        type: integer
+      "type":
+        type: string
+      status:
+        type: string
+      
   ErrorResponse:
     required:
       - err
