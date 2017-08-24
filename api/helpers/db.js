@@ -1,11 +1,24 @@
 let MongoClient = require('mongodb').MongoClient
+let mongoose = require('mongoose')
 let PNF = require('google-libphonenumber').PhoneNumberFormat
 let phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 let config = require('../../config')
 
+
+const clientSchema = mongoose.Schema({
+  name: String,
+  address: String,
+  postalCode: String,
+  phone: String,
+  email: String,
+  dob: String
+})
+
+const Client = mongoose.model('Client', clientSchema);
+
 const getClients = () => {
-  return MongoClient.connect(config.DB_URL).then(db => {
-    return db.collection('clients').find({}).toArray()
+  return Client.find().then(clients => {
+    return clients
   })
 }
 
@@ -17,9 +30,8 @@ const insertClient = clientObj => {
   let phoneNumber = phoneUtil.parse(clientObj.phone, 'US')
   clientObj.phone = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
 
-  return MongoClient.connect(config.DB_URL).then(db => {
-    return db.collection('clients').insert(clientObj)
-  })
+  let client = new Client(clientObj)
+  return client.save()
 }
 
 module.exports = {

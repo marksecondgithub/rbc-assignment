@@ -11,6 +11,7 @@
     "express": "^4.12.3",
     "google-libphonenumber": "^3.0.0",
     "mongodb": "^2.2.31",
+    "mongoose": "^4.11.8",
     "swagger-express-mw": "^0.1.0"
   },
   "devDependencies": {

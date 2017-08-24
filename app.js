@@ -2,22 +2,22 @@
 
 var SwaggerExpress = require('swagger-express-mw');
 var app = require('express')();
+let mongoose = require('mongoose')
+let _config = require('./config')
 module.exports = app; // for testing
 
 var config = {
   appRoot: __dirname // required config
 };
 
-SwaggerExpress.create(config, function(err, swaggerExpress) {
-  if (err) { throw err; }
+mongoose.connect(_config.DB_URL, { useMongoClient: true }).then(db => {
+  SwaggerExpress.create(config, function(err, swaggerExpress) {
+    if (err) { throw err; }
 
-  // install middleware
-  swaggerExpress.register(app);
+    // install middleware
+    swaggerExpress.register(app);
 
-  var port = process.env.PORT || 10010;
-  app.listen(port);
-
-  if (swaggerExpress.runner.swagger.paths['/hello']) {
-    console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
-  }
-});
+    var port = process.env.PORT || 10010;
+    app.listen(port);
+  })
+})
