@@ -86,6 +86,25 @@ const insertAccountByClientId = (clientId, accountObj) => {
   })
 }
 
+const getAccountById = (clientId, accountId) => {
+  return Client.findOne({ _id: clientId }).then(client => {
+    if (!client){
+      return null
+    }
+    return client.accounts.id(accountId)
+  })
+}
+
+const updateAccountById = (clientId, accountId, accountObj) => {
+  let updateObj = {}
+  Object.keys(accountObj).forEach(key => {
+    updateObj[`accounts.$.${key}`] = accountObj[key]
+  })
+  return Client.findOneAndUpdate({_id: clientId, "accounts._id": accountId},
+    { "$set": updateObj }
+  )
+}
+
 module.exports = {
   getClients,
   getClientById,
@@ -94,5 +113,7 @@ module.exports = {
   deleteClientById,
   getAccounts,
   getAccountsByClientId,
-  insertAccountByClientId
+  insertAccountByClientId,
+  getAccountById,
+  updateAccountById
 }

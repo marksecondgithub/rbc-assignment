@@ -140,7 +140,47 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-      
+            
+  /clients/{clientId}/accounts/{accountId}:
+    x-swagger-router-controller: accounts
+    parameters:
+      - name: clientId
+        in: path
+        required: true
+        type: string
+      - name: accountId
+        in: path
+        required: true
+        type: string
+    get:
+      operationId: accountById
+      description: Return an account by ID
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/AccountSchema"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      operationId: accountUpdate
+      description: Update an account by ID
+      parameters:
+        - in: body
+          name: account
+          schema:
+            $ref: "#/definitions/AccountSchema"
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
             
   /accounts:
     x-swagger-router-controller: accounts

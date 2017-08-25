@@ -28,8 +28,38 @@ const accountCreate = (req, res) => {
   })
 }
 
+const accountById = (req, res) => {
+  return db.getAccountById(req.swagger.params.clientId.value, req.swagger.params.accountId.value).then(account => {
+    if (account){
+      return res.json(account)
+    } else {
+      res.status(404)
+      return res.json({err: "Account not found"})
+    }
+  }).catch(err => {
+    res.status(500)
+    return res.json({err: err.message})
+  })
+}
+
+const accountUpdate = (req, res) => {
+  return db.updateAccountById(req.swagger.params.clientId.value, req.swagger.params.accountId.value, req.body).then(account => {
+    if (account){
+      return res.json('')
+    } else {
+      res.status(404)
+      return res.json({err: "Account not found"})
+    }
+  }).catch(err => {
+    res.status(500)
+    return res.json({err: err.message})
+  })
+}
+
 module.exports = {
   accountsList,
   accountsListByClientId,
-  accountCreate
+  accountCreate,
+  accountById,
+  accountUpdate
 }
