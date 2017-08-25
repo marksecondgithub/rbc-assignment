@@ -1,6 +1,7 @@
 let MongoClient = require('mongodb').MongoClient
 let PNF = require('google-libphonenumber').PhoneNumberFormat
 let phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
+let randomInt = require('random-int')
 let config = require('../../config')
 let Client = require('./clients').Client
 let Account = require('./accounts').Account
@@ -35,8 +36,19 @@ const getClientById = clientId => {
 const insertClient = clientObj => {
   clientObj = normalizeClient(clientObj)
 
+  // Randomly assign 10-digit account number
+  clientObj.accounts.map(account => {
+    account.number = randomInt(1000000000, 9999999999)
+    return account
+  })
+
   let client = new Client(clientObj)
-  return client.save()
+  return client.save().catch(err => {
+    // In rare case of duplicate key collision, try new account numbers
+    if (err.code === 11000){ // Duplicate key code
+      return insertClient(clientObj)
+    }
+  })
 }
 
 const updateClientById = (clientId, clientObj) => {
@@ -64,8 +76,13 @@ const getAccountsByClientId = clientId => {
 
 const insertAccountByClientId = (clientId, accountObj) => {
   return Client.findOne({ _id: clientId }).then(client => {
+    accountObj.number = randomInt(1000000000, 9999999999)
     client.accounts.push(accountObj)
-    return client.save()
+    return client.save().catch(err => {
+      if (err.code === 11000){ // Duplicate key code
+        return insertAccountByClientId(clientId, accountObj)
+      }
+    })
   })
 }
 
