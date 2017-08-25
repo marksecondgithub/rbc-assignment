@@ -23,7 +23,6 @@ paths:
     get:
       operationId: clientsList
       description: Returns list of all clients
-      parameters: []
       responses:
         "200":
           description: Success
@@ -48,6 +47,31 @@ paths:
           description: Success
           schema:
             type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /clients/find:
+    x-swagger-router-controller: clients
+    get:
+      operationId: clientFind
+      description: Return a client by query param
+      parameters:
+        - name: account
+          type: integer
+          in: query
+        - name: email
+          type: string
+          in: query
+        - name: phone
+          type: integer
+          in: query
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ClientSchema"
         default:
           description: Error
           schema:

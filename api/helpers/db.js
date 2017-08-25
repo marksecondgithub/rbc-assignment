@@ -29,6 +29,18 @@ const getClients = () => {
   })
 }
 
+const getClientBy = (param, value) => {
+  if (param === 'email'){
+    return Client.findOne({email: _value})
+  } else if (param === 'phone'){
+    let phoneNumber = phoneUtil.parse(String(value), 'US')
+    value = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
+    return Client.findOne({phone: value})
+  } else if (param === 'account'){
+    return Client.findOne({'accounts.number': value})
+  }
+}
+
 const getClientById = clientId => {
   return Client.findOne({ _id: clientId })
 }
@@ -123,6 +135,7 @@ const deleteAccountById = (clientId, accountId) => {
 
 module.exports = {
   getClients,
+  getClientBy,
   getClientById,
   insertClient,
   updateClientById,

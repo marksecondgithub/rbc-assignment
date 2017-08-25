@@ -11,6 +11,36 @@ const clientsList = (req, res) => {
   })
 }
 
+const clientFind = (req, res) => {
+  let params = req.swagger.params
+  let paramsCount = 0
+  Object.keys(params).forEach(param => {
+    paramsCount += params[param].value !== undefined ? 1 : 0
+  })
+  if (paramsCount !== 1){
+    res.status(400)
+    return res.json({err: "Must send exactly one query param (account, phone, email)"})
+  }
+  Object.keys(params).forEach(param => {
+    if (params[param].value !== undefined){
+      return db.getClientBy(param, params[param].value).then(client => {
+        if (client){
+          return res.json(client)
+        } else {
+          res.status(404)
+          return res.json({err: "Client not found"})
+        }
+      }).catch(err => {
+        res.status(500)
+        return res.json({err: err.message})
+      })
+    }
+  })
+  if (params.email.value !== undefined){
+    return db.getClientBy('email', params.email.value)
+  }
+}
+
 const clientById = (req, res) => {
   return db.getClientById(req.swagger.params.clientId.value).then(client => {
     if (client){
@@ -79,6 +109,7 @@ const clientDelete = (req, res) => {
 
 module.exports = {
   clientsList,
+  clientFind,
   clientById,
   clientCreate,
   clientUpdate,

@@ -5,8 +5,18 @@ const ClientSchema = mongoose.Schema({
   name: String,
   address: String,
   postalCode: String,
-  phone: String,
-  email: String,
+  phone: {
+    type: String,
+    unique: true,
+    index: true,
+    required: true
+  },
+  email: {
+    type: String,
+    unique: true,
+    index: true,
+    required: true
+  },
   dob: String,
   accounts: [AccountSchema]
 })
