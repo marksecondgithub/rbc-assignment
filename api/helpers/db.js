@@ -36,11 +36,13 @@ const getClientById = clientId => {
 const insertClient = clientObj => {
   clientObj = normalizeClient(clientObj)
 
-  // Randomly assign 10-digit account number
-  clientObj.accounts.map(account => {
-    account.number = randomInt(1000000000, 9999999999)
-    return account
-  })
+  if (clientObj.accounts){
+    // Randomly assign 10-digit account number
+    clientObj.accounts.map(account => {
+      account.number = randomInt(1000000000, 9999999999)
+      return account
+    })
+  }
 
   let client = new Client(clientObj)
   return client.save().catch(err => {
