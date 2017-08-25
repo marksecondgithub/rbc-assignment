@@ -105,6 +105,20 @@ const updateAccountById = (clientId, accountId, accountObj) => {
   )
 }
 
+const deleteAccountById = (clientId, accountId) => {
+  return Client.findOne({ _id: clientId }).then(client => {
+    if (!client){
+      return null
+    }
+    let account = client.accounts.id(accountId)
+    if (!account){
+      return null
+    }
+    account.remove()
+    return client.save()
+  })
+}
+
 module.exports = {
   getClients,
   getClientById,
@@ -115,5 +129,6 @@ module.exports = {
   getAccountsByClientId,
   insertAccountByClientId,
   getAccountById,
-  updateAccountById
+  updateAccountById,
+  deleteAccountById
 }

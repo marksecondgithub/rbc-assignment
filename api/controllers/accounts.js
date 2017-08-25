@@ -56,10 +56,25 @@ const accountUpdate = (req, res) => {
   })
 }
 
+const accountDelete = (req, res) => {
+  return db.deleteAccountById(req.swagger.params.clientId.value, req.swagger.params.accountId.value).then(client => {
+    if (client){
+      return res.json('')
+    } else {
+      res.status(404)
+      return res.json({err: "Account not found"})
+    }
+  }).catch(err => {
+    res.status(500)
+    return res.json({err: err.message})
+  })
+}
+
 module.exports = {
   accountsList,
   accountsListByClientId,
   accountCreate,
   accountById,
-  accountUpdate
+  accountUpdate,
+  accountDelete
 }

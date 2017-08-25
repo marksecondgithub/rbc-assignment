@@ -181,6 +181,18 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    delete:
+      operationId: accountDelete
+      description: Delete an account by ID
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
             
   /accounts:
     x-swagger-router-controller: accounts
