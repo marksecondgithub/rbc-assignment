@@ -3,6 +3,7 @@
 var SwaggerExpress = require('swagger-express-mw');
 var app = require('express')();
 let mongoose = require('mongoose')
+let cache = require('apicache').middleware
 let _config = require('./config')
 module.exports = app; // for testing
 
@@ -14,8 +15,11 @@ mongoose.connect(_config.DB_URL, { useMongoClient: true }).then(db => {
   SwaggerExpress.create(config, function(err, swaggerExpress) {
     if (err) { throw err; }
 
-    // install middleware
+    // Very basic in-memory caching
+    app.get('/clients/search', cache('5 minutes'))
+    
     swaggerExpress.register(app);
+
 
     var port = process.env.PORT || 10010;
     app.listen(port);
