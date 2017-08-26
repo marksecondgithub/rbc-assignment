@@ -31,7 +31,7 @@ const getClients = () => {
 
 const getClientBy = (param, value) => {
   if (param === 'email'){
-    return Client.findOne({email: _value})
+    return Client.findOne({email: value})
   } else if (param === 'phone'){
     let phoneNumber = phoneUtil.parse(String(value), 'US')
     value = phoneUtil.format(phoneNumber, PNF.INTERNATIONAL)
