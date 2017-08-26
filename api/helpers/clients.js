@@ -1,8 +1,12 @@
 let mongoose = require('mongoose')
 let AccountSchema = require('./accounts').AccountSchema
+let mongoosastic = require('mongoosastic')
 
 const ClientSchema = mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    es_indexed: true
+  },
   address: String,
   postalCode: String,
   phone: {
@@ -17,11 +21,17 @@ const ClientSchema = mongoose.Schema({
     index: true,
     required: true
   },
-  dob: String,
+  dob: {
+    type: Date,
+    es_indexed: true,
+    es_type: 'date'
+  },
   accounts: [AccountSchema]
 })
 
-const Client = mongoose.model('Client', ClientSchema);
+ClientSchema.plugin(mongoosastic)
+
+let Client = mongoose.model('Client', ClientSchema);
 
 module.exports = {
   ClientSchema,

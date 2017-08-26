@@ -10,8 +10,10 @@
   "dependencies": {
     "express": "^4.12.3",
     "google-libphonenumber": "^3.0.0",
+    "moment": "^2.18.1",
     "mongodb": "^2.2.31",
-    "mongoose": "^4.11.8",
+    "mongoosastic": "^4.3.0",
+    "mongoose": "^4.8.4",
     "random-int": "^1.0.0",
     "swagger-express-mw": "^0.1.0"
   },

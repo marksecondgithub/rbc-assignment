@@ -77,6 +77,33 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
             
+  /clients/search:
+    x-swagger-router-controller: clients
+    get:
+      operationId: clientSearch
+      description: Search clients by name and/or age range
+      parameters:
+        - name: name
+          in: query
+          type: string
+        - name: minAge
+          in: query
+          type: integer
+        - name: maxAge
+          in: query
+          type: integer
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ClientSchema"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
   /clients/{clientId}:
     x-swagger-router-controller: clients
     parameters:
