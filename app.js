@@ -17,7 +17,7 @@ mongoose.connect(_config.DB_URL, { useMongoClient: true }).then(db => {
 
     // Very basic in-memory caching
     app.get('/clients/search', cache('5 minutes'))
-    
+    app.get('/accounts', cache('5 minutes'))
     swaggerExpress.register(app);
 
 
