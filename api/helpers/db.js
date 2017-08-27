@@ -77,16 +77,25 @@ const deleteClientById = clientId => {
 
 // Accounts
 
-const getAccounts = () => {
+const getAccounts = params => {
   return new Promise((resolve, reject) => {
+    let matchClauses = {}
+    params.forEach(param => {
+      matchClauses[`accounts.${param.param}`] = param.value
+    })
     Client.collection.aggregate({
+      $match: matchClauses
+    }, {
       $unwind: '$accounts'
+    }, {
+      $match: matchClauses
     }, {
       $project: {
         _id: '$accounts._id',
         number: '$accounts.number',
         type: '$accounts.type',
-        status: '$accounts.status'
+        status: '$accounts.status',
+        clientId: '$_id'
       }
     }, (err, accounts) => {
       if (err){

@@ -6,8 +6,14 @@ const AccountSchema = mongoose.Schema({
     unique: true,
     sparse: true
   },
-  type: String,
-  status: String
+  type: {
+    type: String,
+    enum: ['chequing', 'savings', 'investment']
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive']
+  },
 })
 
 module.exports = {

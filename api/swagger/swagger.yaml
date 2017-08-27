@@ -222,7 +222,7 @@ paths:
         - in: body
           name: account
           schema:
-            $ref: "#/definitions/AccountSchema"
+            $ref: "#/definitions/AccountUpdateSchema"
       responses:
         "200":
           description: Success
@@ -250,7 +250,26 @@ paths:
     get:
       operationId: accountsList
       description: Returns list of all accounts
-      parameters: []
+      parameters:
+        - name: number
+          type: integer
+          in: query
+          required: false
+        - name: type
+          type: string
+          enum: 
+            - chequing
+            - savings
+            - investment
+          in: query
+          required: false
+        - name: status
+          type: string
+          enum:
+            - active
+            - inactive
+          in: query
+          required: false
       responses:
         "200":
           description: Success
@@ -311,11 +330,33 @@ definitions:
   AccountSchema:
     required:
       - type
+      - status
     properties:
       "type":
         type: string
+        enum:
+          - chequing
+          - savings
+          - investment
       status:
         type: string
+        enum:
+          - active
+          - inactive
+  
+  AccountUpdateSchema:
+    properties:
+      "type":
+        type: string
+        enum:
+          - chequing
+          - savings
+          - investment
+      status:
+        type: string
+        enum:
+          - active
+          - inactive
       
   ErrorResponse:
     required:

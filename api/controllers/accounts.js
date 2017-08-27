@@ -1,7 +1,11 @@
 let db = require('../helpers/db')
 
 const accountsList = (req, res) => {
-  return db.getAccounts().then(accounts => {
+  let params = Object.entries(req.swagger.params).filter(([key, value]) => value.value !== undefined).map(([key, value]) => ({
+    param: key,
+    value: value.value
+  }))
+  return db.getAccounts(params).then(accounts => {
     return res.json(accounts)
   }).catch(err => {
     res.status(500)
