@@ -1,5 +1,6 @@
 var should = require('should');
 var request = require('supertest');
+var apicache = require('apicache');
 var server = require('../../../app');
 var db = require('../../../api/helpers/db')
 var Client = require('../../../api/helpers/clients').Client
@@ -11,12 +12,16 @@ describe('controllers', function() {
     let client1 = null
     beforeEach(function(done) {
       let clientObj = {
-        name: "Mark",
+        name: "Mark Douglas Jamieson",
         address: "123 Fake St",
         postalCode: "A1A 1A1",
         phone: "222 555 8888",
-        email: "mark@gmail.com",
-        dob: "1980-01-01"
+        email: "markjamieson0@gmail.com",
+        dob: "1980-01-01",
+        accounts: [{
+          type: 'savings',
+          status: 'active'
+        }]
       }
       db.insertClient(clientObj).then(client => {
         client1 = client
@@ -24,7 +29,9 @@ describe('controllers', function() {
       })
     })
     afterEach(function(done) {
-      Client.remove({}).then(() => {done()})
+      Client.remove({}).then(() => {
+        done()
+      })
     })
     describe('GET /clients', function() {
       it('should return a list of 1 item', function(done) {
@@ -82,7 +89,7 @@ describe('controllers', function() {
           .end(function(err, res) {
             should.not.exist(err);
             resBody = res.body
-            resBody.name.should.eql('Mark')
+            resBody.name.should.eql('Mark Douglas Jamieson')
             done()
           })
       })
@@ -130,6 +137,160 @@ describe('controllers', function() {
               should(clients.length).eql(0)
               done()
             })
+          })
+      })
+    })
+    describe('GET /clients/find', function(){
+      let goodURLs = [
+        '/clients/find?phone=2225558888',
+        '/clients/find?email=markjamieson0@gmail.com'
+      ]
+      let badURLs = [
+        '/clients/find?phone=2225559999',
+        '/clients/find?email=bademail@gmail.com',
+        '/clients/find?account=5'
+      ]
+      goodURLs.forEach(url => {
+        it('should return a single record for each good url', function(done) {
+          request(server)
+            .get(url)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+              should.not.exist(err);
+              should(res.body._id).eql(client1._id.toString())
+              done()
+            })
+        })
+      })
+      it('should return a single record for each good url', function(done) {
+        // Need to construct the account URL inside this callback because account number
+        // isn't available until beforeEach callback returns
+        request(server)
+          .get(`/clients/find?account=${client1.accounts[0].number}`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            should.not.exist(err);
+            should(res.body._id).eql(client1._id.toString())
+            done()
+          })
+      })
+      badURLs.forEach(url => {
+        it('should 404 for each bad url', function(done) {
+          request(server)
+            .get(url)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end(function(err, res) {
+              done()
+            })
+        })
+      })
+    })
+    describe('GET /clients/search', function(){
+      it ('should perform text search by name', function(done){
+        request(server)
+          .get('/clients/search?name=Mark')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            should.not.exist(err);
+            should(res.body.length).eql(1)
+            done()
+          })
+      })
+      it ('should search by age range (with results)', function(done){
+        request(server)
+          .get('/clients/search?minAge=30&maxAge=40')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            should.not.exist(err);
+            should(res.body.length).eql(1)
+            done()
+          })
+      })
+      it ('should search by age range (without results)', function(done){
+        request(server)
+          .get('/clients/search?minAge=20&maxAge=30')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            should.not.exist(err);
+            should(res.body.length).eql(0)
+            done()
+          })
+      })
+    })
+    describe('CACHING search', function(){
+      before(function(done){
+        apicache.clear()
+        // The request to cache
+        request(server)
+          .get('/clients/search?name=Mark')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            should.not.exist(err);
+            done()
+          })
+      })
+      it ('should not update cached search results ...', function(done){
+        let clientObj = {
+          name: "Mark Douglas Jamieson",
+          address: "123 Fake St",
+          postalCode: "A1A 1A1",
+          phone: "222 555 9999",
+          email: "markjamieson0+1@gmail.com",
+          dob: "1990-01-01",
+          accounts: [{
+            type: 'savings',
+            status: 'active'
+          }]
+        }
+        db.insertClient(clientObj).then(client => {
+          client1 = client
+          request(server)
+            .get('/clients/search?name=Mark')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+              should.not.exist(err);
+              should(res.body.length).eql(0)
+              done()
+            })
+        })
+      })
+      it ('... until cache is cleared ...', function(done){
+        request(server)
+          .get('/clearcache')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            should.not.exist(err);
+            done()
+          })
+      })
+      it ('... and the search results should be up to date', function(done){
+        request(server)
+          .get('/clients/search?name=Mark')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            should.not.exist(err);
+            should(res.body.length).eql(1)
+            done()
           })
       })
     })
