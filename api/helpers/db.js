@@ -2,6 +2,7 @@ let MongoClient = require('mongodb').MongoClient
 let PNF = require('google-libphonenumber').PhoneNumberFormat
 let phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 let randomInt = require('random-int')
+let mongoose = require('mongoose')
 let config = require('../../config')
 let Client = require('./clients').Client
 let Account = require('./accounts').Account
@@ -77,8 +78,22 @@ const deleteClientById = clientId => {
 // Accounts
 
 const getAccounts = () => {
-  return Account.find().then(accounts => {
-    return accounts
+  return new Promise((resolve, reject) => {
+    Client.collection.aggregate({
+      $unwind: '$accounts'
+    }, {
+      $project: {
+        _id: '$accounts._id',
+        number: '$accounts.number',
+        type: '$accounts.type',
+        status: '$accounts.status'
+      }
+    }, (err, accounts) => {
+      if (err){
+        reject(err)
+      }
+      resolve(accounts)
+    })
   })
 }
 
