@@ -44,29 +44,11 @@ const clientFind = (req, res) => {
 }
 
 const clientSearch = (req, res) => {
-  let params = req.swagger.params
-  let query = {
-    bool: {
-      must: []
-    }
-  }
-  if (params.name.value){
-    query.bool.must.push({match: {name: params.name.value}})
-  }
-  if (params.minAge.value || params.maxAge.value){
-    let rangeClause = { range: { dob: {} } }
-    if (params.maxAge.value){
-      let minDate = new moment().subtract(params.maxAge.value + 1, 'years').add(1, 'days').toDate()
-      rangeClause.range.dob.from = minDate
-    }
-    if (params.minAge.value){
-      let maxDate = new moment().subtract(params.minAge.value, 'years').toDate()
-      rangeClause.range.dob.to = maxDate
-    }
-    query.bool.must.push(rangeClause)
-  }
-  Client.search(query, {hydrate: true}, (err, clients) => {
-    return res.json(clients.hits.hits)
+  return db.searchClients(req.swagger.params).then(clients => {
+    return res.json(clients)
+  }).catch(err => {
+    res.status(500)
+    return res.json({err: err.message})
   })
 }
 

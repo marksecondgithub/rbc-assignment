@@ -3,6 +3,7 @@ let PNF = require('google-libphonenumber').PhoneNumberFormat
 let phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 let randomInt = require('random-int')
 let mongoose = require('mongoose')
+let moment = require('moment')
 let config = require('../../config')
 let Client = require('./clients').Client
 let Account = require('./accounts').Account
@@ -40,6 +41,31 @@ const getClientBy = (param, value) => {
   } else if (param === 'account'){
     return Client.findOne({'accounts.number': value})
   }
+}
+
+const searchClients = (params) => {
+  let query
+  if (params.name.value){
+    query = Client.find(
+      { $text: { $search: params.name.value } },
+      { score : { $meta: "textScore" } }
+    ).sort({ score : { $meta : 'textScore' } })
+  } else {
+    query = Client.find()
+  }
+  if (params.minAge.value || params.maxAge.value){
+    let dobClause = {}
+    if (params.maxAge.value){
+      let minDate = new moment().subtract(params.maxAge.value + 1, 'years').add(1, 'days').toDate()
+      dobClause.$gte = minDate
+    }
+    if (params.minAge.value){
+      let maxDate = new moment().subtract(params.minAge.value, 'years').toDate()
+      dobClause.$lte = maxDate
+    }
+    query = query.and({dob: dobClause})
+  }
+  return query
 }
 
 const getClientById = clientId => {
@@ -160,6 +186,7 @@ const deleteAccountById = (clientId, accountId) => {
 module.exports = {
   getClients,
   getClientBy,
+  searchClients,
   getClientById,
   insertClient,
   updateClientById,

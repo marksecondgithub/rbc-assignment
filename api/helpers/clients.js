@@ -1,12 +1,8 @@
 let mongoose = require('mongoose')
 let AccountSchema = require('./accounts').AccountSchema
-let mongoosastic = require('mongoosastic')
 
-const ClientSchema = mongoose.Schema({
-  name: {
-    type: String,
-    es_indexed: true
-  },
+let ClientSchema = mongoose.Schema({
+  name: String,
   address: String,
   postalCode: String,
   phone: {
@@ -29,7 +25,7 @@ const ClientSchema = mongoose.Schema({
   accounts: [AccountSchema]
 })
 
-ClientSchema.plugin(mongoosastic)
+ClientSchema.index({ name: 'text' })
 
 let Client = mongoose.model('Client', ClientSchema);
 
