@@ -282,6 +282,21 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
             
+  /clearcache:
+    x-swagger-router-controller: cache
+    get:
+      operationId: clearCache
+      description: Clears cached search responses
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
   /swagger:
     x-swagger-pipe: swagger_raw
 
